@@ -10,7 +10,7 @@ RUN yum install -y rpm-build rpmdevtools gcc make coreutils python git
 
 # Setting up node to run our JS file
 # Download Node Linux binary
-RUN curl -O https://nodejs.org/download/release/v16.18.1/node-v16.18.1-linux-arm64.tar.xz
+RUN curl -O https://nodejs.org/download/release/v16.18.1/node-v16.18.1-linux-x64.tar.xz
 
 # Extract and install
 RUN tar --strip-components 1 -xvf node-v* -C /usr/local
