@@ -89,18 +89,18 @@ async function run() {
     // actions/upload-release-asset
 
     // Get source rpm name , to provide file name, path as output
-    let myOutput = '';
-    await cp.exec('ls /github/home/rpmbuild/SRPMS/', (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        console.error(err)
-      } else {
-          // the *entire* stdout and stderr (buffered)
-          console.log(`stdout: ${stdout}`);
-          myOutput = myOutput+`${stdout}`.trim();
-          console.log(`stderr: ${stderr}`);
-        }
-      });
+    // let myOutput = '';
+    // await cp.exec('ls /github/home/rpmbuild/SRPMS/', (err, stdout, stderr) => {
+    //   if (err) {
+    //     //some err occurred
+    //     console.error(err)
+    //   } else {
+    //       // the *entire* stdout and stderr (buffered)
+    //       console.log(`stdout: ${stdout}`);
+    //       myOutput = myOutput+`${stdout}`.trim();
+    //       console.log(`stderr: ${stderr}`);
+    //     }
+    //   });
 
 
     // only contents of workspace can be changed by actions and used by subsequent actions
@@ -108,8 +108,8 @@ async function run() {
     await exec.exec(`mkdir -p rpmbuild/SRPMS`);
     await exec.exec(`mkdir -p rpmbuild/RPMS`);
 
-    await exec.exec(`cp /github/home/rpmbuild/SRPMS/${myOutput} rpmbuild/SRPMS`);
-    await cp.exec(`cp -R /github/home/rpmbuild/RPMS/ rpmbuild/RPMS/`);
+    await exec.exec(`cp -R /github/home/rpmbuild/SRPMS/ rpmbuild/SRPMS`);
+    await exec.exec(`cp -R /github/home/rpmbuild/RPMS/ rpmbuild/RPMS/`);
 
 
     await exec.exec(`ls -la rpmbuild/SRPMS`);
