@@ -19,11 +19,18 @@ async function run() {
 
     // get inputs from workflow
     // specFile name
-    const configPath = core.getInput('spec_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
-    const basename = path.basename(configPath); // always just `foo.spec`
+    const specPath = core.getInput('spec_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
+    const specBasename = path.basename(specPath); // always just `foo.spec`
     const specFile = {
-      srcFullPath: `/github/workspace/${configPath}`,
-      destFullPath: `/github/home/rpmbuild/SPECS/${basename}`,
+      srcFullPath: `/github/workspace/${specPath}`,
+      destFullPath: `/github/home/rpmbuild/SPECS/${specBasename}`,
+    };
+
+    const servicePath = core.getInput('service_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
+    const serviceBasename = path.basename(servicePath); // always just `foo.spec`
+    const serviceFile = {
+      srcFullPath: `/github/workspace/${servicePath}`,
+      destFullPath: `/github/home/rpmbuild/SPECS/${serviceBasename}`,
     };
 
     // Read spec file and get values
@@ -48,6 +55,7 @@ async function run() {
 
     // Copy spec file from path specFile to /github/home/rpmbuild/SPECS/
     await exec.exec(`cp ${specFile.srcFullPath} ${specFile.destFullPath}`);
+    await exec.exec(`cp ${serviceFile.srcFullPath} ${serviceFile.destFullPath}`);
 
     // Make the code in /github/workspace/ into a tar.gz, located in /github/home/rpmbuild/SOURCES/
     const oldGitDir = process.env.GIT_DIR;
