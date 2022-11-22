@@ -2,11 +2,15 @@ name: 'RPM Build'
 description: 'Build RPMs from spec file and upload it as Artifact or Release Asset'
 author: 'Naveenraj M'
 
-inputs: 
+inputs:
+  service_file:
+    description: 'path to the service file'
+    required: true
+    default: '*.service'                     #Any service file in top
   spec_file:
     description: 'path to the spec file'
     required: true
-    default: '*.spec'                     #Any spec file in top 
+    default: '*.spec'                     #Any spec file in top
   additional_repos:
     description: 'A list of additional repositories to enable'
     required: false
@@ -30,5 +34,3 @@ runs:
 branding:
   icon: 'package'
   color: 'red'
-
-  

@@ -12,23 +12,30 @@ async function run() {
     // Get github context data
     const context = github.context;
 
-    // To be used to get contents of this git ref 
+    // To be used to get contents of this git ref
     const owner = context.repo.owner
     const repo = context.repo.repo
     const ref = context.ref
 
     // get inputs from workflow
     // specFile name
-    const configPath = core.getInput('spec_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
-    const basename = path.basename(configPath); // always just `foo.spec`
+    const specPath = core.getInput('spec_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
+    const specBasename = path.basename(specPath); // always just `foo.spec`
     const specFile = {
-      srcFullPath: `/github/workspace/${configPath}`,
-      destFullPath: `/github/home/rpmbuild/SPECS/${basename}`,
+      srcFullPath: `/github/workspace/${specPath}`,
+      destFullPath: `/github/home/rpmbuild/SPECS/${specBasename}`,
     };
 
-    // Read spec file and get values 
+    const servicePath = core.getInput('service_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
+    const serviceBasename = path.basename(servicePath); // always just `foo.spec`
+    const serviceFile = {
+      srcFullPath: `/github/workspace/${servicePath}`,
+      destFullPath: `/github/home/rpmbuild/SOURCES/${serviceBasename}`,
+    };
+
+    // Read spec file and get values
     var data = fs.readFileSync(specFile.srcFullPath, 'utf8');
-    let name = '';       
+    let name = '';
     let version = '';
 
     for (var line of data.split('\n')){
@@ -38,7 +45,7 @@ async function run() {
         }
         if(lineArray[0].includes('Version')){
             version = version+lineArray[1];
-        }   
+        }
     }
     console.log(`name: ${name}`);
     console.log(`version: ${version}`);
@@ -48,11 +55,12 @@ async function run() {
 
     // Copy spec file from path specFile to /github/home/rpmbuild/SPECS/
     await exec.exec(`cp ${specFile.srcFullPath} ${specFile.destFullPath}`);
+    await exec.exec(`cp ${serviceFile.srcFullPath} ${serviceFile.destFullPath}`);
 
     // Make the code in /github/workspace/ into a tar.gz, located in /github/home/rpmbuild/SOURCES/
     const oldGitDir = process.env.GIT_DIR;
     process.env.GIT_DIR = '/github/workspace/.git';
-    await exec.exec(`git archive --output=/github/home/rpmbuild/SOURCES/${name}-${version}.tar.gz --prefix=${name}-${version}/ HEAD`);
+    await exec.exec(`spectool -g -R ${specFile.destFullPath}`);
     await exec.exec(`ln -s /github/home/rpmbuild/SOURCES/${name}-${version}.tar.gz /github/home/rpmbuild/SOURCES/${name}.tar.gz`);
     process.env.GIT_DIR = oldGitDir;
 
@@ -81,8 +89,8 @@ async function run() {
     // Verify RPM is created
     await exec.exec('ls /github/home/rpmbuild/RPMS');
 
-    // setOutput rpm_path to /root/rpmbuild/RPMS , to be consumed by other actions like 
-    // actions/upload-release-asset 
+    // setOutput rpm_path to /root/rpmbuild/RPMS , to be consumed by other actions like
+    // actions/upload-release-asset
 
     // Get source rpm name , to provide file name, path as output
     let myOutput = '';
@@ -99,7 +107,7 @@ async function run() {
       });
 
 
-    // only contents of workspace can be changed by actions and used by subsequent actions 
+    // only contents of workspace can be changed by actions and used by subsequent actions
     // So copy all generated rpms into workspace , and publish output path relative to workspace (/github/workspace)
     await exec.exec(`mkdir -p rpmbuild/SRPMS`);
     await exec.exec(`mkdir -p rpmbuild/RPMS`);
@@ -109,14 +117,14 @@ async function run() {
 
     await exec.exec(`ls -la rpmbuild/SRPMS`);
     await exec.exec(`ls -la rpmbuild/RPMS`);
-    
+
     // set outputs to path relative to workspace ex ./rpmbuild/
     core.setOutput("source_rpm_dir_path", `rpmbuild/SRPMS/`);              // path to  SRPMS directory
     core.setOutput("source_rpm_path", `rpmbuild/SRPMS/${myOutput}`);       // path to Source RPM file
     core.setOutput("source_rpm_name", `${myOutput}`);                      // name of Source RPM file
     core.setOutput("rpm_dir_path", `rpmbuild/RPMS/`);                      // path to RPMS directory
     core.setOutput("rpm_content_type", "application/octet-stream");        // Content-type for Upload
-    
+
 
 
   } catch (error) {
