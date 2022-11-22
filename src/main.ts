@@ -61,7 +61,7 @@ async function run() {
     const oldGitDir = process.env.GIT_DIR;
     process.env.GIT_DIR = '/github/workspace/.git';
     await exec.exec(`spectool -g -R ${specFile.destFullPath}`);
-    await exec.exec(`[[ ! -e /github/home/rpmbuild/SOURCES/${name}.tar.gz ]] && ln -s /github/home/rpmbuild/SOURCES/${name}-${version}.tar.gz /github/home/rpmbuild/SOURCES/${name}.tar.gz`);
+    await exec.exec(`test ! -e /github/home/rpmbuild/SOURCES/${name}.tar.gz && ln -s /github/home/rpmbuild/SOURCES/${name}-${version}.tar.gz /github/home/rpmbuild/SOURCES/${name}.tar.gz`);
     process.env.GIT_DIR = oldGitDir;
 
     // Installs additional repositories
