@@ -58,11 +58,7 @@ async function run() {
     await exec.exec(`cp ${serviceFile.srcFullPath} ${serviceFile.destFullPath}`);
 
     // Make the code in /github/workspace/ into a tar.gz, located in /github/home/rpmbuild/SOURCES/
-    const oldGitDir = process.env.GIT_DIR;
-    process.env.GIT_DIR = '/github/workspace/.git';
     await exec.exec(`spectool -g -R ${specFile.destFullPath}`);
-    await exec.exec(`test ! -e /github/home/rpmbuild/SOURCES/${name}.tar.gz && ln -s /github/home/rpmbuild/SOURCES/${name}-${version}.tar.gz /github/home/rpmbuild/SOURCES/${name}.tar.gz`);
-    process.env.GIT_DIR = oldGitDir;
 
     // Installs additional repositories
     const additionalRepos = core.getInput('additional_repos'); // user input, eg: '["centos-release-scl"]'
