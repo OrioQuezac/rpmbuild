@@ -3,10 +3,9 @@ description: 'Build RPMs from spec file and upload it as Artifact or Release Ass
 author: 'Naveenraj M'
 
 inputs:
-  service_file:
-    description: 'path to the service file'
-    required: true
-    default: '*.service'                     #Any service file in top
+  sources_dir:
+    description: 'path to the SOURCES files'
+    required: false                  #Any service file in top
   spec_file:
     description: 'path to the spec file'
     required: true
