@@ -118,9 +118,9 @@ async function run() {
     await exec.exec(`ls -la rpmbuild/RPMS`);
 
     // set outputs to path relative to workspace ex ./rpmbuild/
-    core.setOutput("sources_rpm_dir_path", `rpmbuild/SRPMS/`);              // path to  SRPMS directory
-    core.setOutput("sources_rpm_path", `rpmbuild/SRPMS/${myOutput}`);       // path to Source RPM file
-    core.setOutput("sources_rpm_name", `${myOutput}`);                      // name of Source RPM file
+    core.setOutput("source_rpm_dir_path", `rpmbuild/SRPMS/`);              // path to  SRPMS directory
+    core.setOutput("source_rpm_path", `rpmbuild/SRPMS/${myOutput}`);       // path to Source RPM file
+    core.setOutput("source_rpm_name", `${myOutput}`);                      // name of Source RPM file
     core.setOutput("rpm_dir_path", `rpmbuild/RPMS/`);                      // path to RPMS directory
     core.setOutput("rpm_content_type", "application/octet-stream");        // Content-type for Upload
 
