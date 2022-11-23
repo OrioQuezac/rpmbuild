@@ -55,7 +55,7 @@ async function run() {
 
     // Copy spec file from path specFile to /github/home/rpmbuild/SPECS/
     await exec.exec(`cp ${specFile.srcFullPath} ${specFile.destFullPath}`);
-    await exec.exec(`cp ${sourcesFile.srcFullPath}/* ${sourcesFile.destFullPath}`);
+    await exec.exec(`cp -a ${sourcesFile.srcFullPath}/. ${sourcesFile.destFullPath}`);
 
     // Make the code in /github/workspace/ into a tar.gz, located in /github/home/rpmbuild/SOURCES/
     await exec.exec(`spectool -g -R ${specFile.destFullPath}`);
