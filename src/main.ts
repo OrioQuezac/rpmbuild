@@ -26,11 +26,11 @@ async function run() {
       destFullPath: `/github/home/rpmbuild/SPECS/${specBasename}`,
     };
 
-    const servicePath = core.getInput('service_file'); // user input, eg: `foo.spec' or `rpm/foo.spec'
-    const serviceBasename = path.basename(servicePath); // always just `foo.spec`
-    const serviceFile = {
-      srcFullPath: `/github/workspace/${servicePath}`,
-      destFullPath: `/github/home/rpmbuild/SOURCES/${serviceBasename}`,
+    const sourcesPath = core.getInput('sources_dir'); // user input, eg: `foo.spec' or `rpm/foo.spec'
+    const sourcesBasename = path.basename(sourcesPath); // always just `foo.spec`
+    const sourcesFile = {
+      srcFullPath: `/github/workspace/${sourcesPath}`,
+      destFullPath: `/github/home/rpmbuild/SOURCES/`,
     };
 
     // Read spec file and get values
@@ -55,7 +55,7 @@ async function run() {
 
     // Copy spec file from path specFile to /github/home/rpmbuild/SPECS/
     await exec.exec(`cp ${specFile.srcFullPath} ${specFile.destFullPath}`);
-    await exec.exec(`cp ${serviceFile.srcFullPath} ${serviceFile.destFullPath}`);
+    await exec.exec(`cp -a ${sourcesFile.srcFullPath}/. ${sourcesFile.destFullPath}`);
 
     // Make the code in /github/workspace/ into a tar.gz, located in /github/home/rpmbuild/SOURCES/
     await exec.exec(`spectool -g -R ${specFile.destFullPath}`);
@@ -88,7 +88,7 @@ async function run() {
     // setOutput rpm_path to /root/rpmbuild/RPMS , to be consumed by other actions like
     // actions/upload-release-asset
 
-    // Get source rpm name , to provide file name, path as output
+    // Get sources rpm name , to provide file name, path as output
     let myOutput = '';
     await cp.exec('ls /github/home/rpmbuild/SRPMS/', (err, stdout, stderr) => {
       if (err) {
