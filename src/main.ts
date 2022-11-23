@@ -30,7 +30,7 @@ async function run() {
     const sourcesBasename = path.basename(sourcesPath); // always just `foo.spec`
     const sourcesFile = {
       srcFullPath: `/github/workspace/${sourcesPath}`,
-      destFullPath: `/github/home/rpmbuild/SOURCES/${sourcesBasename}`,
+      destFullPath: `/github/home/rpmbuild/SOURCES/`,
     };
 
     // Read spec file and get values
